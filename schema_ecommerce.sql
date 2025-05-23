@@ -24,6 +24,54 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `Categoria`
+--
+
+CREATE TABLE `Categoria` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `Usuario`
+--
+
+CREATE TABLE `Usuario` (
+  `id` int(11) NOT NULL,
+  `firstName` varchar(20) NOT NULL,
+  `lastName` varchar(20) NOT NULL,
+  `email` varchar(30) NOT NULL,
+  `password` varchar(400) NOT NULL,
+  `isVerified` tinyint(1) NOT NULL,
+  `isActive` tinyint(1) NOT NULL,
+  `isStaff` tinyint(1) NOT NULL,
+  `lastLogin` datetime DEFAULT current_timestamp(),
+  `isSuperuser` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `Produto`
+--
+
+CREATE TABLE `Produto` (
+  `id` int(11) NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `categoriaId` int(11) DEFAULT NULL,
+  `subCategory` varchar(40) NOT NULL,
+  `description` varchar(150) NOT NULL,
+  `urlName` varchar(40) DEFAULT NULL,
+  `estoque` int(100) NOT NULL,
+  `price` double NOT NULL,
+  `promotion` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `ProdutoFoto`
 --
 
@@ -65,58 +113,6 @@ CREATE TABLE `PedidoItem` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `Categoria`
---
-
-CREATE TABLE `Categoria` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `Produto`
---
-
-CREATE TABLE `Produto` (
-  `id` int(11) NOT NULL,
-  `name` varchar(40) NOT NULL,
-  `categoriaId` int(11) DEFAULT NULL,
-  `subCategory` varchar(40) NOT NULL,
-  `description` varchar(150) NOT NULL,
-  `urlName` varchar(40) DEFAULT NULL,
-  `estoque` int(100) NOT NULL,
-  `price` double NOT NULL,
-  `promotion` tinyint(1) NOT NULL,
-  `foto1` varchar(100) DEFAULT NULL,
-  `foto2` varchar(100) DEFAULT NULL,
-  `foto3` varchar(100) DEFAULT NULL,
-  `foto4` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `Usuario`
---
-
-CREATE TABLE `Usuario` (
-  `id` int(11) NOT NULL,
-  `firstName` varchar(20) NOT NULL,
-  `lastName` varchar(20) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `password` varchar(400) NOT NULL,
-  `isVerified` tinyint(1) NOT NULL,
-  `isActive` tinyint(1) NOT NULL,
-  `isStaff` tinyint(1) NOT NULL,
-  `lastLogin` datetime DEFAULT current_timestamp(),
-  `isSuperuser` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estrutura para tabela `Carrinho`
 --
 
@@ -147,6 +143,25 @@ CREATE TABLE `CarrinhoItem` (
 --
 
 --
+-- Índices de tabela `Categoria`
+--
+ALTER TABLE `Categoria`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `Usuario`
+--
+ALTER TABLE `Usuario`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `Produto`
+--
+ALTER TABLE `Produto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `categoriaId` (`categoriaId`);
+
+--
 -- Índices de tabela `ProdutoFoto`
 --
 ALTER TABLE `ProdutoFoto`
@@ -169,25 +184,6 @@ ALTER TABLE `PedidoItem`
   ADD KEY `pedidoId` (`pedidoId`);
 
 --
--- Índices de tabela `Categoria`
---
-ALTER TABLE `Categoria`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `Produto`
---
-ALTER TABLE `Produto`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `categoriaId` (`categoriaId`);
-
---
--- Índices de tabela `Usuario`
---
-ALTER TABLE `Usuario`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Índices de tabela `Carrinho`
 --
 ALTER TABLE `Carrinho`
@@ -208,6 +204,24 @@ ALTER TABLE `CarrinhoItem`
 --
 
 --
+-- AUTO_INCREMENT de tabela `Categoria`
+--
+ALTER TABLE `Categoria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `Usuario`
+--
+ALTER TABLE `Usuario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT de tabela `Produto`
+--
+ALTER TABLE `Produto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
 -- AUTO_INCREMENT de tabela `ProdutoFoto`
 --
 ALTER TABLE `ProdutoFoto`
@@ -226,24 +240,6 @@ ALTER TABLE `PedidoItem`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
--- AUTO_INCREMENT de tabela `Categoria`
---
-ALTER TABLE `Categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de tabela `Produto`
---
-ALTER TABLE `Produto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
-
---
--- AUTO_INCREMENT de tabela `Usuario`
---
-ALTER TABLE `Usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
-
---
 -- AUTO_INCREMENT de tabela `Carrinho`
 --
 ALTER TABLE `Carrinho`
@@ -258,6 +254,12 @@ ALTER TABLE `CarrinhoItem`
 --
 -- Restrições para tabelas despejadas
 --
+
+--
+-- Restrições para tabela `Produto`
+--
+ALTER TABLE `Produto`
+  ADD CONSTRAINT `Produto_ibfk_1` FOREIGN KEY (`categoriaId`) REFERENCES `Categoria` (`id`);
 
 --
 -- Restrições para tabela `ProdutoFoto`
@@ -277,12 +279,6 @@ ALTER TABLE `Pedido`
 ALTER TABLE `PedidoItem`
   ADD CONSTRAINT `PedidoItem_ibfk_1` FOREIGN KEY (`pedidoId`) REFERENCES `Pedido` (`id`),
   ADD CONSTRAINT `PedidoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
-
---
--- Restrições para tabela `Produto`
---
-ALTER TABLE `Produto`
-  ADD CONSTRAINT `Produto_ibfk_1` FOREIGN KEY (`categoriaId`) REFERENCES `Categoria` (`id`);
 
 --
 -- Restrições para tabela `Carrinho`
