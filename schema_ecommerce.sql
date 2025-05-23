@@ -31,7 +31,7 @@ CREATE TABLE `ProdutoFoto` (
   `id` int(11) NOT NULL,
   `produtoId` int(11) NOT NULL,
   `isMain` tinyint(1) NOT NULL,
-  `path` char(300) NOT NULL,
+  `path` char(255) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
   `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
