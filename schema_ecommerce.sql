@@ -8,9 +8,7 @@
 -- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -20,6 +18,25 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `trabalho_bd`
 --
+
+-- -------------------------------------------------------------
+-- Cuidado isso apaga o banco de dados existente!
+-- -------------------------------------------------------------
+DROP DATABASE IF EXISTS `trabalho_bd`;
+CREATE DATABASE `trabalho_bd`;
+USE `trabalho_bd`;
+
+DELIMITER $$ 
+
+CREATE PROCEDURE `setup_database`()
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT 'Ocorreu um erro! Revertendo todas as alterações.' AS Error_Message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
 
 -- --------------------------------------------------------
 
@@ -293,14 +310,21 @@ ALTER TABLE `Carrinho`
 ALTER TABLE `CarrinhoItem`
   ADD CONSTRAINT `CarrinhoItem_ibfk_1` FOREIGN KEY (`cartId`) REFERENCES `Carrinho` (`id`),
   ADD CONSTRAINT `CarrinhoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+  
+  COMMIT;
+  
+END$$
+DELIMITER ;
+
+CALL `setup_database`();
+
+DROP PROCEDURE IF EXISTS `setup_database`;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
-
-USE trabalho_bd;
+USE `trabalho_bd`; 
 
 DROP USER IF EXISTS 'admin'@'localhost';
 DROP USER IF EXISTS 'cliente_01'@'localhost';
