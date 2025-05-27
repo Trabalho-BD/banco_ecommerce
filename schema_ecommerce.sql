@@ -297,3 +297,35 @@ ALTER TABLE `CarrinhoItem`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+USE trabalho_bd;
+
+DROP USER IF EXISTS 'admin'@'localhost';
+DROP USER IF EXISTS 'cliente_01'@'localhost';
+DROP USER IF EXISTS 'cliente_02'@'localhost';
+DROP USER IF EXISTS 'cliente_03'@'localhost';
+
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'senha_supersegura195';
+CREATE USER 'cliente_01'@'localhost' IDENTIFIED BY 'senha_390';
+CREATE USER 'cliente_02'@'localhost' IDENTIFIED BY 'senha_821';
+CREATE USER 'cliente_03'@'localhost' IDENTIFIED BY 'senha_093';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'admin'@'localhost';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_01'@'localhost';
+REVOKE INSERT, UPDATE, DELETE ON trabalho_bd.* FROM 'cliente_01'@'localhost';
+
+GRANT SELECT ON trabalho_bd.* TO 'cliente_02'@'localhost';
+
+GRANT UPDATE ON trabalho_bd.Produto TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.ProdutoFoto TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.Carrinho TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.Pedido TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.PedidoItem TO 'cliente_02'@'localhost';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_03'@'localhost';
+REVOKE DELETE ON trabalho_bd.* FROM 'cliente_03'@'localhost';
+
+FLUSH PRIVILEGES;
