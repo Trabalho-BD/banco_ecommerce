@@ -8,9 +8,7 @@
 -- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -21,110 +19,140 @@ SET time_zone = "+00:00";
 -- Banco de dados: `trabalho_bd`
 --
 
--- --------------------------------------------------------
+-- -------------------------------------------------------------
+-- Cuidado isso apaga o banco de dados existente!
+-- -------------------------------------------------------------
+DROP DATABASE IF EXISTS `trabalho_bd`;
+CREATE DATABASE `trabalho_bd`;
+USE `trabalho_bd`;
 
---
--- Estrutura para tabela `pedido`
---
+DELIMITER $$ 
 
-CREATE TABLE `pedido` (
-  `delivery_id` int(11) NOT NULL,
-  `status` varchar(50) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `valor_total` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE PROCEDURE `setup_database`()
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT 'Ocorreu um erro! Revertendo todas as alterações.' AS Error_Message;
+        ROLLBACK;
+    END;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `pedidoitem`
---
-
-CREATE TABLE `pedidoitem` (
-  `pedidoItem_id` int(11) NOT NULL,
-  `pedido_id` int(11) NOT NULL,
-  `produto_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    START TRANSACTION;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `categoria`
+-- Estrutura para tabela `Categoria`
 --
 
-CREATE TABLE `categoria` (
-  `category_id` int(11) NOT NULL,
+CREATE TABLE `Categoria` (
+  `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `produto`
+-- Estrutura para tabela `Usuario`
 --
 
-CREATE TABLE `produto` (
-  `product_id` int(11) NOT NULL,
-  `name` varchar(40) NOT NULL,
-  `categoria_id` int(11) DEFAULT NULL,
-  `sub_category` varchar(40) NOT NULL,
-  `description` varchar(150) NOT NULL,
-  `url_name` varchar(40) DEFAULT NULL,
-  `estoque` int(100) NOT NULL,
-  `price` double NOT NULL,
-  `promotion` tinyint(1) NOT NULL,
-  `foto_1` varchar(100) DEFAULT NULL,
-  `foto_2` varchar(100) DEFAULT NULL,
-  `foto_3` varchar(100) DEFAULT NULL,
-  `foto_4` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `usuario`
---
-
-CREATE TABLE `usuario` (
+CREATE TABLE `Usuario` (
   `id` int(11) NOT NULL,
-  `first_name` varchar(20) NOT NULL,
-  `last_name` varchar(20) NOT NULL,
+  `firstName` varchar(20) NOT NULL,
+  `lastName` varchar(20) NOT NULL,
   `email` varchar(30) NOT NULL,
   `password` varchar(400) NOT NULL,
-  `is_verified` tinyint(1) NOT NULL,
-  `is_active` tinyint(1) NOT NULL,
-  `is_staff` tinyint(1) NOT NULL,
-  `last_login` datetime DEFAULT current_timestamp(),
-  `is_superuser` tinyint(1) NOT NULL
+  `isVerified` tinyint(1) NOT NULL,
+  `isActive` tinyint(1) NOT NULL,
+  `isStaff` tinyint(1) NOT NULL,
+  `lastLogin` datetime DEFAULT current_timestamp(),
+  `isSuperuser` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `carrinho`
+-- Estrutura para tabela `Produto`
 --
 
-CREATE TABLE `carrinho` (
-  `cart_id` int(11) NOT NULL,
-  `produto_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+CREATE TABLE `Produto` (
+  `id` int(11) NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `categoriaId` int(11) DEFAULT NULL,
+  `subCategory` varchar(40) NOT NULL,
+  `description` varchar(150) NOT NULL,
+  `urlName` varchar(40) DEFAULT NULL,
+  `estoque` int(100) NOT NULL,
+  `price` double NOT NULL,
+  `promotion` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `carrinhoitem`
+-- Estrutura para tabela `ProdutoFoto`
 --
 
-CREATE TABLE `carrinhoitem` (
-  `cartitem_id` int(11) NOT NULL,
-  `cart_id` int(11) NOT NULL,
-  `produto_id` int(11) NOT NULL,
+CREATE TABLE `ProdutoFoto` (
+  `id` int(11) NOT NULL,
+  `produtoId` int(11) NOT NULL,
+  `isMain` tinyint(1) NOT NULL,
+  `path` char(255) NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `Pedido`
+--
+
+CREATE TABLE `Pedido` (
+  `id` int(11) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `valorTotal` float NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `PedidoItem`
+--
+
+CREATE TABLE `PedidoItem` (
+  `id` int(11) NOT NULL,
+  `pedidoId` int(11) NOT NULL,
+  `produtoId` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `Carrinho`
+--
+
+CREATE TABLE `Carrinho` (
+  `id` int(11) NOT NULL,
+  `produtoId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `CarrinhoItem`
+--
+
+CREATE TABLE `CarrinhoItem` (
+  `id` int(11) NOT NULL,
+  `cartId` int(11) NOT NULL,
+  `produtoId` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `price_ind` double(10,0) NOT NULL
+  `priceInd` double(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -132,130 +160,196 @@ CREATE TABLE `carrinhoitem` (
 --
 
 --
--- Índices de tabela `pedido`
+-- Índices de tabela `Categoria`
 --
-ALTER TABLE `pedido`
-  ADD PRIMARY KEY (`delivery_id`),
-  ADD KEY `user_id_id` (`user_id`);
-
---
--- Índices de tabela `pedidoitem`
---
-ALTER TABLE `pedidoitem`
-  ADD PRIMARY KEY (`pedidoItem_id`),
-  ADD KEY `produto` (`produto_id`),
-  ADD KEY `pedido_id` (`pedido_id`);
-
---
--- Índices de tabela `categoria`
---
-ALTER TABLE `categoria`
-  ADD PRIMARY KEY (`category_id`);
-
---
--- Índices de tabela `produto`
---
-ALTER TABLE `produto`
-  ADD PRIMARY KEY (`product_id`),
-  ADD KEY `categoria` (`categoria_id`);
-
---
--- Índices de tabela `usuario`
---
-ALTER TABLE `usuario`
+ALTER TABLE `Categoria`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `carrinho`
+-- Índices de tabela `Usuario`
 --
-ALTER TABLE `carrinho`
-  ADD PRIMARY KEY (`cart_id`),
-  ADD KEY `product_id` (`produto_id`);
+ALTER TABLE `Usuario`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `carrinhoitem`
+-- Índices de tabela `Produto`
 --
-ALTER TABLE `carrinhoitem`
-  ADD PRIMARY KEY (`cartitem_id`),
-  ADD KEY `cart_id` (`cart_id`),
-  ADD KEY `produto_id` (`produto_id`);
+ALTER TABLE `Produto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `categoriaId` (`categoriaId`);
+
+--
+-- Índices de tabela `ProdutoFoto`
+--
+ALTER TABLE `ProdutoFoto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produtoId` (`produtoId`);
+
+--
+-- Índices de tabela `Pedido`
+--
+ALTER TABLE `Pedido`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- Índices de tabela `PedidoItem`
+--
+ALTER TABLE `PedidoItem`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produtoId` (`produtoId`),
+  ADD KEY `pedidoId` (`pedidoId`);
+
+--
+-- Índices de tabela `Carrinho`
+--
+ALTER TABLE `Carrinho`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produtoId` (`produtoId`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- Índices de tabela `CarrinhoItem`
+--
+ALTER TABLE `CarrinhoItem`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cartId` (`cartId`),
+  ADD KEY `produtoId` (`produtoId`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `pedido`
+-- AUTO_INCREMENT de tabela `Categoria`
 --
-ALTER TABLE `pedido`
-  MODIFY `delivery_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+ALTER TABLE `Categoria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de tabela `pedidoitem`
+-- AUTO_INCREMENT de tabela `Usuario`
 --
-ALTER TABLE `pedidoitem`
-  MODIFY `pedidoItem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
-
---
--- AUTO_INCREMENT de tabela `categoria`
---
-ALTER TABLE `categoria`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de tabela `produto`
---
-ALTER TABLE `produto`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
-
---
--- AUTO_INCREMENT de tabela `usuario`
---
-ALTER TABLE `usuario`
+ALTER TABLE `Usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
--- AUTO_INCREMENT de tabela `carrinho`
+-- AUTO_INCREMENT de tabela `Produto`
 --
-ALTER TABLE `carrinho`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+ALTER TABLE `Produto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- AUTO_INCREMENT de tabela `carrinhoitem`
+-- AUTO_INCREMENT de tabela `ProdutoFoto`
 --
-ALTER TABLE `carrinhoitem`
-  MODIFY `cartitem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+ALTER TABLE `ProdutoFoto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `Pedido`
+--
+ALTER TABLE `Pedido`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+
+--
+-- AUTO_INCREMENT de tabela `PedidoItem`
+--
+ALTER TABLE `PedidoItem`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT de tabela `Carrinho`
+--
+ALTER TABLE `Carrinho`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de tabela `CarrinhoItem`
+--
+ALTER TABLE `CarrinhoItem`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- Restrições para tabelas despejadas
 --
 
 --
--- Restrições para tabelas `pedido`
+-- Restrições para tabela `Produto`
 --
-ALTER TABLE `pedido`
-  ADD CONSTRAINT `user_id_id` FOREIGN KEY (`user_id`) REFERENCES `usuario` (`id`);
+ALTER TABLE `Produto`
+  ADD CONSTRAINT `Produto_ibfk_1` FOREIGN KEY (`categoriaId`) REFERENCES `Categoria` (`id`);
 
 --
--- Restrições para tabelas `pedidoitem`
+-- Restrições para tabela `ProdutoFoto`
 --
-ALTER TABLE `pedidoitem`
-  ADD CONSTRAINT `pedido_id` FOREIGN KEY (`pedido_id`) REFERENCES `pedido` (`delivery_id`),
-  ADD CONSTRAINT `produto` FOREIGN KEY (`produto_id`) REFERENCES `produto` (`product_id`);
+ALTER TABLE `ProdutoFoto`
+  ADD CONSTRAINT `ProdutoFoto_ibfk_1` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
 
 --
--- Restrições para tabelas `produto`
+-- Restrições para tabela `Pedido`
 --
-ALTER TABLE `produto`
-  ADD CONSTRAINT `categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`category_id`);
+ALTER TABLE `Pedido`
+  ADD CONSTRAINT `Pedido_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `Usuario` (`id`);
 
 --
--- Restrições para tabelas `carrinhoitem`
+-- Restrições para tabela `PedidoItem`
 --
-ALTER TABLE `carrinhoitem`
-  ADD CONSTRAINT `cart_id` FOREIGN KEY (`cart_id`) REFERENCES `carrinho` (`cart_id`),
-  ADD CONSTRAINT `produto_id` FOREIGN KEY (`produto_id`) REFERENCES `produto` (`product_id`);
+ALTER TABLE `PedidoItem`
+  ADD CONSTRAINT `PedidoItem_ibfk_1` FOREIGN KEY (`pedidoId`) REFERENCES `Pedido` (`id`),
+  ADD CONSTRAINT `PedidoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+
+--
+-- Restrições para tabela `Carrinho`
+--
+ALTER TABLE `Carrinho`
+  ADD CONSTRAINT `Carrinho_ibfk_1` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`),
+  ADD CONSTRAINT `Carrinho_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `Usuario` (`id`);
+
+--
+-- Restrições para tabela `CarrinhoItem`
+--
+ALTER TABLE `CarrinhoItem`
+  ADD CONSTRAINT `CarrinhoItem_ibfk_1` FOREIGN KEY (`cartId`) REFERENCES `Carrinho` (`id`),
+  ADD CONSTRAINT `CarrinhoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+  
+  COMMIT;
+  
+END$$
+DELIMITER ;
+
+CALL `setup_database`();
+
+DROP PROCEDURE IF EXISTS `setup_database`;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+USE `trabalho_bd`; 
+
+DROP USER IF EXISTS 'admin'@'localhost';
+DROP USER IF EXISTS 'cliente_01'@'localhost';
+DROP USER IF EXISTS 'cliente_02'@'localhost';
+DROP USER IF EXISTS 'cliente_03'@'localhost';
+
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'senha_supersegura195';
+CREATE USER 'cliente_01'@'localhost' IDENTIFIED BY 'senha_390';
+CREATE USER 'cliente_02'@'localhost' IDENTIFIED BY 'senha_821';
+CREATE USER 'cliente_03'@'localhost' IDENTIFIED BY 'senha_093';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'admin'@'localhost';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_01'@'localhost';
+REVOKE INSERT, UPDATE, DELETE ON trabalho_bd.* FROM 'cliente_01'@'localhost';
+
+GRANT SELECT ON trabalho_bd.* TO 'cliente_02'@'localhost';
+
+GRANT UPDATE ON trabalho_bd.Produto TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.ProdutoFoto TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.Carrinho TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.Pedido TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.PedidoItem TO 'cliente_02'@'localhost';
+
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_03'@'localhost';
+REVOKE DELETE ON trabalho_bd.* FROM 'cliente_03'@'localhost';
+
+FLUSH PRIVILEGES;
