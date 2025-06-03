@@ -60,3 +60,14 @@ Execute o script `.sql` no seu servidor MySQL (ex: via phpMyAdmin ou CLI):
 ```bash
 mysql -u root -p < dump.sql
 
+
+### 2. 🐍 Instalar dependências Python
+
+```bash
+pip install mysql-connector-python
+
+
+### 3. ▶️ Executar script
+python consultas.py
+
+
