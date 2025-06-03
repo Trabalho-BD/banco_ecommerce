@@ -1,5 +1,5 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- versão 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
@@ -32,7 +32,7 @@ CREATE PROCEDURE `setup_database`()
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SELECT 'Ocorreu um erro! Revertendo todas as alterações.' AS Error_Message;
+        SELECT 'Ocorreu um erro! Revertendo todas as alterações.' AS Mensagem_Erro;
         ROLLBACK;
     END;
 
@@ -46,7 +46,10 @@ BEGIN
 
 CREATE TABLE `Categoria` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `nome` varchar(100) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -57,15 +60,18 @@ CREATE TABLE `Categoria` (
 
 CREATE TABLE `Usuario` (
   `id` int(11) NOT NULL,
-  `firstName` varchar(20) NOT NULL,
-  `lastName` varchar(20) NOT NULL,
+  `primeiroNome` varchar(20) NOT NULL,
+  `ultimoNome` varchar(20) NOT NULL,
   `email` varchar(30) NOT NULL,
-  `password` varchar(400) NOT NULL,
-  `isVerified` tinyint(1) NOT NULL,
-  `isActive` tinyint(1) NOT NULL,
-  `isStaff` tinyint(1) NOT NULL,
-  `lastLogin` datetime DEFAULT current_timestamp(),
-  `isSuperuser` tinyint(1) NOT NULL
+  `senha` varchar(400) NOT NULL,
+  `verificado` tinyint(1) NOT NULL,
+  `ativo` tinyint(1) NOT NULL,
+  `funcionario` tinyint(1) NOT NULL,
+  `ultimoLogin` datetime DEFAULT current_timestamp(),
+  `superUsuario` tinyint(1) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -76,29 +82,32 @@ CREATE TABLE `Usuario` (
 
 CREATE TABLE `Produto` (
   `id` int(11) NOT NULL,
-  `name` varchar(40) NOT NULL,
+  `nome` varchar(40) NOT NULL,
   `categoriaId` int(11) DEFAULT NULL,
-  `subCategory` varchar(40) NOT NULL,
-  `description` varchar(150) NOT NULL,
-  `urlName` varchar(40) DEFAULT NULL,
+  `subCategoria` varchar(40) NOT NULL,
+  `descricao` varchar(150) NOT NULL,
+  `nomeUrl` varchar(40) DEFAULT NULL,
   `estoque` int(100) NOT NULL,
-  `price` double NOT NULL,
-  `promotion` tinyint(1) NOT NULL
+  `preco` double NOT NULL,
+  `promocao` tinyint(1) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `ProdutoFoto`
+-- Estrutura para tabela `FotoProduto`
 --
 
-CREATE TABLE `ProdutoFoto` (
+CREATE TABLE `FotoProduto` (
   `id` int(11) NOT NULL,
   `produtoId` int(11) NOT NULL,
-  `isMain` tinyint(1) NOT NULL,
-  `path` char(255) NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `principal` tinyint(1) NOT NULL,
+  `caminho` char(255) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -110,21 +119,27 @@ CREATE TABLE `ProdutoFoto` (
 CREATE TABLE `Pedido` (
   `id` int(11) NOT NULL,
   `status` varchar(50) NOT NULL,
-  `userId` int(11) DEFAULT NULL,
-  `valorTotal` float NOT NULL
+  `usuarioId` int(11) DEFAULT NULL,
+  `valorTotal` float NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `PedidoItem`
+-- Estrutura para tabela `ItemPedido`
 --
 
-CREATE TABLE `PedidoItem` (
+CREATE TABLE `ItemPedido` (
   `id` int(11) NOT NULL,
   `pedidoId` int(11) NOT NULL,
   `produtoId` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL
+  `quantidade` int(11) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -136,23 +151,25 @@ CREATE TABLE `PedidoItem` (
 CREATE TABLE `Carrinho` (
   `id` int(11) NOT NULL,
   `produtoId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `usuarioId` int(11) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `CarrinhoItem`
+-- Estrutura para tabela `ItemCarrinho`
 --
 
-CREATE TABLE `CarrinhoItem` (
+CREATE TABLE `ItemCarrinho` (
   `id` int(11) NOT NULL,
-  `cartId` int(11) NOT NULL,
+  `carrinhoId` int(11) NOT NULL,
   `produtoId` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `priceInd` double(10,0) NOT NULL
+  `quantidade` int(11) NOT NULL,
+  `precoInd` double(10,0) NOT NULL,
+  `criadoEm` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizadoEm` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -179,9 +196,9 @@ ALTER TABLE `Produto`
   ADD KEY `categoriaId` (`categoriaId`);
 
 --
--- Índices de tabela `ProdutoFoto`
+-- Índices de tabela `FotoProduto`
 --
-ALTER TABLE `ProdutoFoto`
+ALTER TABLE `FotoProduto`
   ADD PRIMARY KEY (`id`),
   ADD KEY `produtoId` (`produtoId`);
 
@@ -190,12 +207,12 @@ ALTER TABLE `ProdutoFoto`
 --
 ALTER TABLE `Pedido`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `userId` (`userId`);
+  ADD KEY `usuarioId` (`usuarioId`);
 
 --
--- Índices de tabela `PedidoItem`
+-- Índices de tabela `ItemPedido`
 --
-ALTER TABLE `PedidoItem`
+ALTER TABLE `ItemPedido`
   ADD PRIMARY KEY (`id`),
   ADD KEY `produtoId` (`produtoId`),
   ADD KEY `pedidoId` (`pedidoId`);
@@ -206,14 +223,14 @@ ALTER TABLE `PedidoItem`
 ALTER TABLE `Carrinho`
   ADD PRIMARY KEY (`id`),
   ADD KEY `produtoId` (`produtoId`),
-  ADD KEY `userId` (`userId`);
+  ADD KEY `usuarioId` (`usuarioId`);
 
 --
--- Índices de tabela `CarrinhoItem`
+-- Índices de tabela `ItemCarrinho`
 --
-ALTER TABLE `CarrinhoItem`
+ALTER TABLE `ItemCarrinho`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `cartId` (`cartId`),
+  ADD KEY `carrinhoId` (`carrinhoId`),
   ADD KEY `produtoId` (`produtoId`);
 
 --
@@ -239,9 +256,9 @@ ALTER TABLE `Produto`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- AUTO_INCREMENT de tabela `ProdutoFoto`
+-- AUTO_INCREMENT de tabela `FotoProduto`
 --
-ALTER TABLE `ProdutoFoto`
+ALTER TABLE `FotoProduto`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -251,9 +268,9 @@ ALTER TABLE `Pedido`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
 
 --
--- AUTO_INCREMENT de tabela `PedidoItem`
+-- AUTO_INCREMENT de tabela `ItemPedido`
 --
-ALTER TABLE `PedidoItem`
+ALTER TABLE `ItemPedido`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
@@ -263,9 +280,9 @@ ALTER TABLE `Carrinho`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT de tabela `CarrinhoItem`
+-- AUTO_INCREMENT de tabela `ItemCarrinho`
 --
-ALTER TABLE `CarrinhoItem`
+ALTER TABLE `ItemCarrinho`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
@@ -279,37 +296,37 @@ ALTER TABLE `Produto`
   ADD CONSTRAINT `Produto_ibfk_1` FOREIGN KEY (`categoriaId`) REFERENCES `Categoria` (`id`);
 
 --
--- Restrições para tabela `ProdutoFoto`
+-- Restrições para tabela `FotoProduto`
 --
-ALTER TABLE `ProdutoFoto`
-  ADD CONSTRAINT `ProdutoFoto_ibfk_1` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+ALTER TABLE `FotoProduto`
+  ADD CONSTRAINT `FotoProduto_ibfk_1` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
 
 --
 -- Restrições para tabela `Pedido`
 --
 ALTER TABLE `Pedido`
-  ADD CONSTRAINT `Pedido_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `Usuario` (`id`);
+  ADD CONSTRAINT `Pedido_ibfk_1` FOREIGN KEY (`usuarioId`) REFERENCES `Usuario` (`id`);
 
 --
--- Restrições para tabela `PedidoItem`
+-- Restrições para tabela `ItemPedido`
 --
-ALTER TABLE `PedidoItem`
-  ADD CONSTRAINT `PedidoItem_ibfk_1` FOREIGN KEY (`pedidoId`) REFERENCES `Pedido` (`id`),
-  ADD CONSTRAINT `PedidoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+ALTER TABLE `ItemPedido`
+  ADD CONSTRAINT `ItemPedido_ibfk_1` FOREIGN KEY (`pedidoId`) REFERENCES `Pedido` (`id`),
+  ADD CONSTRAINT `ItemPedido_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
 
 --
 -- Restrições para tabela `Carrinho`
 --
 ALTER TABLE `Carrinho`
   ADD CONSTRAINT `Carrinho_ibfk_1` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`),
-  ADD CONSTRAINT `Carrinho_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `Usuario` (`id`);
+  ADD CONSTRAINT `Carrinho_ibfk_2` FOREIGN KEY (`usuarioId`) REFERENCES `Usuario` (`id`);
 
 --
--- Restrições para tabela `CarrinhoItem`
+-- Restrições para tabela `ItemCarrinho`
 --
-ALTER TABLE `CarrinhoItem`
-  ADD CONSTRAINT `CarrinhoItem_ibfk_1` FOREIGN KEY (`cartId`) REFERENCES `Carrinho` (`id`),
-  ADD CONSTRAINT `CarrinhoItem_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
+ALTER TABLE `ItemCarrinho`
+  ADD CONSTRAINT `ItemCarrinho_ibfk_1` FOREIGN KEY (`carrinhoId`) REFERENCES `Carrinho` (`id`),
+  ADD CONSTRAINT `ItemCarrinho_ibfk_2` FOREIGN KEY (`produtoId`) REFERENCES `Produto` (`id`);
   
   COMMIT;
   
@@ -326,17 +343,17 @@ DROP PROCEDURE IF EXISTS `setup_database`;
 
 USE `trabalho_bd`; 
 
-DROP USER IF EXISTS 'admin'@'localhost';
+DROP USER IF EXISTS 'administrador'@'localhost';
 DROP USER IF EXISTS 'cliente_01'@'localhost';
 DROP USER IF EXISTS 'cliente_02'@'localhost';
 DROP USER IF EXISTS 'cliente_03'@'localhost';
 
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'senha_supersegura195';
+CREATE USER 'administrador'@'localhost' IDENTIFIED BY 'senha_supersegura195';
 CREATE USER 'cliente_01'@'localhost' IDENTIFIED BY 'senha_390';
 CREATE USER 'cliente_02'@'localhost' IDENTIFIED BY 'senha_821';
 CREATE USER 'cliente_03'@'localhost' IDENTIFIED BY 'senha_093';
 
-GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'admin'@'localhost';
+GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'administrador'@'localhost';
 
 GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_01'@'localhost';
 REVOKE INSERT, UPDATE, DELETE ON trabalho_bd.* FROM 'cliente_01'@'localhost';
@@ -344,12 +361,13 @@ REVOKE INSERT, UPDATE, DELETE ON trabalho_bd.* FROM 'cliente_01'@'localhost';
 GRANT SELECT ON trabalho_bd.* TO 'cliente_02'@'localhost';
 
 GRANT UPDATE ON trabalho_bd.Produto TO 'cliente_02'@'localhost';
-GRANT UPDATE ON trabalho_bd.ProdutoFoto TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.FotoProduto TO 'cliente_02'@'localhost';
 GRANT UPDATE ON trabalho_bd.Carrinho TO 'cliente_02'@'localhost';
 GRANT UPDATE ON trabalho_bd.Pedido TO 'cliente_02'@'localhost';
-GRANT UPDATE ON trabalho_bd.PedidoItem TO 'cliente_02'@'localhost';
+GRANT UPDATE ON trabalho_bd.ItemPedido TO 'cliente_02'@'localhost';
 
 GRANT ALL PRIVILEGES ON trabalho_bd.* TO 'cliente_03'@'localhost';
 REVOKE DELETE ON trabalho_bd.* FROM 'cliente_03'@'localhost';
 
 FLUSH PRIVILEGES;
+
